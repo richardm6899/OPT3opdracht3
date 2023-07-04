@@ -2,8 +2,8 @@ class Drill extends Product {
     private String brand;
     private String type;
 
-    public Drill(String name, double rentalPrice, double insurancePrice, String brand, String type) {
-        super(name, rentalPrice, insurancePrice);
+    public Drill(String name, String omschrijving, double rentalPrice, double insurancePrice, boolean available, boolean verhuurd, String brand, String type) {
+        super(name, omschrijving, rentalPrice, insurancePrice, available, verhuurd);
         this.brand = brand;
         this.type = type;
     }
@@ -14,24 +14,25 @@ class Drill extends Product {
     }
     @Override
     public boolean isAvailable() {
-        return true;
+        if (verhuurd) {
+            return false; // Si el coche está alquilado
+        } else {
+            return true; // Si no está alquilado
+        }
     }
     @Override
-    protected double calculateRentalPrice(int days) {
-        return rentalPrice * days;
+    protected double calculateRentalPrice(double rentalPrice) {
+        return rentalPrice;
     }
 
     @Override
-    protected double calculateInsurancePrice(int days) {
-        return insurancePrice * days;
+    protected double calculateInsurancePrice(double insurancePrice) {
+        return insurancePrice;
     }
     @Override
-    public void displayDetails() {
-        System.out.println("Drill: " + name);
-        System.out.println("Brand: " + brand);
+    protected void displaySpecificDetails() {
+        System.out.println("Merk: " + brand);
         System.out.println("Type: " + type);
-        System.out.println("Rental Price: " + rentalPrice + " euro/day");
-        System.out.println("Insurance Price: " + insurancePrice + " euro/day");
-        System.out.println();
     }
+
 }

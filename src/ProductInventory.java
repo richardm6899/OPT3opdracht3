@@ -2,8 +2,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 class ProductInventory implements Subject {
-    private List<Observer> observers;
     private List<Product> products;
+    private List<ProductObserver> observers;
     private List<Medewerker> medewerkers;
 
 
@@ -13,6 +13,19 @@ class ProductInventory implements Subject {
         medewerkers = new ArrayList<>();
     }
 
+    public void addProductObserver(ProductObserver observer) {
+        observers.add(observer);
+    }
+
+    public void removeProductObserver(ProductObserver observer) {
+        observers.remove(observer);
+    }
+
+    public void notifyObservers() {
+        for (ProductObserver observer : observers) {
+            observer.update(products);
+        }
+    }
 
     public List<Medewerker> getMedewerkers() {
         return medewerkers;
@@ -27,31 +40,26 @@ class ProductInventory implements Subject {
         medewerkers.add(medewerker);
     }
 
-    public void removeProduct(Product product) {
-        products.remove(product);
-        notifyObservers();
-    }
 
     public List<Product> getProducts() {
         return products;
     }
 
-    @Override
-    public void registerObserver(Observer observer) {
-        observers.add(observer);
-    }
+    public List<String> getProductTypes() {
+        List<String> productTypes = new ArrayList<>();
 
-    @Override
-    public void removeObserver(Observer observer) {
-        observers.remove(observer);
-    }
+        for (Product product : products) {
+            String productType = product.getProductType();
 
-    @Override
-    public void notifyObservers() {
-        for (Observer observer : observers) {
-            observer.update(this);
+            if (!productTypes.contains(productType)) {
+                productTypes.add(productType);
+            }
         }
+
+        return productTypes;
     }
+
 }
 
-// Observer interface for Observer pattern
+
+

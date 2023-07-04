@@ -3,9 +3,15 @@ import java.util.Scanner;
 
 class Inlogvenster {
     private ProductInventory productInventory;
+    private ProductFactory productFactory;
+    private ProductObserver productObserver;
 
-    public Inlogvenster(ProductInventory productInventory) {
+    public Inlogvenster(ProductInventory productInventory,ProductFactory productFactory ) {
+
         this.productInventory = productInventory;
+        this.productFactory = productFactory;
+        this.productObserver = new ProductOverview();
+        this.productInventory.addProductObserver(productObserver);
     }
 
     public void login() {
@@ -37,7 +43,7 @@ class Inlogvenster {
         return false;
     }
 
-    private void openMenu(String username) {
+    public void openMenu(String username) {
         Scanner scanner = new Scanner(System.in);
         boolean isLoggedIn = true;
 
@@ -48,40 +54,53 @@ class Inlogvenster {
             System.out.println("3. Uitloggen");
             System.out.print("Selecteer een optie: ");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline character
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:
-                    // Implementeer logica voor Overzicht
-                    ProductOverviewWindow productOverviewWindow = new ProductOverviewWindow(productInventory);
-                    productOverviewWindow.display();
-                    Product car1 = new Car("Civic", 50, 0.01, "Honda", 1000, 50);
-                    Product car2 = new Car("SUV", 50, 0.01, "Nissan", 1200, 50);
-                    Product car3 = new Car("KUGA", 50, 0.01, "FORD", 1100, 50);
+                    Product car1 = new Car("Civic", "kleine auto", 50, 0.01, true, false, "Honda", 1000, 50);
+                    Product car2 = new Car("SUV", "Grootste auto", 50, 0.01, true, false, "Nissan", 1200, 50);
+                    Product car3 = new Car("KUGA", "Lange auto", 50, 0.01, true, false, "FORD", 1100, 50);
+                    Product truck1 = new Truck("BigTruck", "Grote vrachtwagen", 0.10, 0.01, false, true, 2000, 10000);
+                    Product truck2 = new Truck("FarmersTruck", "Boeren vrachtwagen", 0.10, 0.01, true, true, 4000, 12000);
+                    Product truck3 = new Truck("Jumbo", "Lange Vrachtwagen", 0.10, 0.01, true, true, 3000, 12000);
+                    Product drill1 = new Drill("DCD791P2-QW", "Kleine boormachine", 5, 1, true, false, "DeWalt", "Type 2");
+                    Product drill2 = new Drill("DHR243ZJW", "Grote boormachine", 5, 1, false, true, "Makita", "Type 3");
+                    Product drill3 = new Drill("PBD 40", "Lange boormachine", 5, 1, true, false, "BOSCH", "Type 5");
+                    ProductOverview overviewWindow = new ProductOverview();
                     productInventory.addProduct(car1);
                     productInventory.addProduct(car2);
                     productInventory.addProduct(car3);
-                    Product truck1 = new Truck("BigTruck", 0.10, 0.01, 2000, 10000);
-                    Product truck2 = new Truck("FarmersTruck", 0.10, 0.01, 4000, 12000);
-                    Product truck3 = new Truck("Jumbo", 0.10, 0.01, 3000, 12000);
                     productInventory.addProduct(truck1);
                     productInventory.addProduct(truck2);
                     productInventory.addProduct(truck3);
-                    Product drill1 = new Drill("DCD791P2-QW", 5, 1, "DeWalt", "Type 1");
-                    Product drill2 = new Drill("DHR243ZJW", 5, 1, "Makita", "Type 2");
-                    Product drill3 = new Drill("PBD 40", 5, 1, "BOSCH", "Type 2");
                     productInventory.addProduct(drill1);
                     productInventory.addProduct(drill2);
                     productInventory.addProduct(drill3);
                     showProductOverview();
+                    Medewerker medewerker1 = new Medewerker("user1", "password1");
+                    Medewerker medewerker2 = new Medewerker("user2", "password2");
+                    Klant klant1 = new Klant("Richard", "Morris");
+                    Klant klant2 = new Klant("Robert", "Morris");
+                    car1.setVerhuurd(false);
+                    car2.setVerhuurd(false);
+                    car3.setVerhuurd(false);
+                    truck1.setVerhuurd(false);
+                    drill1.setVerhuurd(false);
+                    drill3.setVerhuurd(false);
+                    truck1.verhuren(medewerker1, klant1);
+
+
                     break;
                 case 2:
-                    // Implementeer logica voor Beheer
+
+
                     System.out.println("Beheer");
+                    showProductTypes();
                     break;
                 case 3:
                     System.out.println("Uitgelogd");
-                    isLoggedIn = false; // Uitloggen, de lus wordt verlaten
+                    isLoggedIn = false;
                     break;
                 default:
                     System.out.println("Ongeldige keuze. Probeer opnieuw.");
@@ -91,61 +110,103 @@ class Inlogvenster {
         }
         login();
     }
-    private void showProductOverview() {
+
+
+    public void showProductOverview() {
         Scanner scanner = new Scanner(System.in);
         List<Product> products = productInventory.getProducts();
         System.out.println("Product Overview:");
 
         for (int i = 0; i < products.size(); i++) {
             Product product = products.get(i);
-            String availability = product instanceof Car ? "Yes" : "No";
-            System.out.println((i + 1) + ". " + product.getShortDescription() + " (Available: " + availability + ")");
+            System.out.println((i + 1) + ". Name: " + product.getName());
+            System.out.println("Description: " + product.getOmschrijving());
+            System.out.println("Availability: " + product.isAvailable());
+            System.out.println("----------------------");
         }
 
         System.out.print("Selecteer een product (0 om terug te gaan): ");
         int choice = scanner.nextInt();
-        scanner.nextLine(); // Consume newline character
+        scanner.nextLine();
 
         if (choice >= 1 && choice <= products.size()) {
             Product selectedProduct = products.get(choice - 1);
             displayProductDetails(selectedProduct);
         } else if (choice == 0) {
-            // Terug naar het vorige menu
+
         } else {
             System.out.println("Ongeldige keuze. Terug naar het vorige menu.");
         }
     }
 
     private void displayProductDetails(Product product) {
-        System.out.println("Product Details:");
-        product.displayDetails();
+        product.displayProductDetails();
     }
+
     private void showProductTypes() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Selecteer een producttype:");
+        List<String> productTypes = productInventory.getProductTypes();
 
-        System.out.println("1. Car");
-        System.out.println("2. Truck");
-        System.out.println("3. Drill");
+        System.out.println("Lijst van alle soorten producten:");
 
-        System.out.print("Selecteer een optie (0 om terug te gaan): ");
-        int choice = scanner.nextInt();
-        scanner.nextLine(); // Consume newline character
+        for (int i = 0; i < productTypes.size(); i++) {
+            System.out.println((i + 1) + ". " + productTypes.get(i));
+        }
 
-        switch (choice) {
-            case 1:
-                Car.addCar();
-                break;
-            case 2:
-                addTruck();
-                break;
-            case 3:
-                addDrill();
-                break;
-            case 0:
-                // Terug naar het vorige menu
-                break;
-            default:
-                System.out.println("Ongeldige keuze. Terug naar het vorige menu.");
+        System.out.print("Selecteer een soort product (0 om terug te gaan): ");
+        int productChoice = scanner.nextInt();
+        scanner.nextLine();
+
+        if (productChoice >= 1 && productChoice <= productTypes.size()) {
+            String selectedProductType = productTypes.get(productChoice - 1);
+            System.out.println("Toevoegen van een " + selectedProductType + " product:");
+            System.out.println("Voer de gegevens in:");
+
+
+            System.out.print("Naam: ");
+            String name = scanner.nextLine();
+            System.out.print("Omschrijving: ");
+            String description = scanner.nextLine();
+            System.out.print("Huurprijs: ");
+            double rentalPrice = scanner.nextDouble();
+            System.out.print("Verzekeringsprijs: ");
+            double insurancePrice = scanner.nextDouble();
+            System.out.print("Beschikbaar (true/false): ");
+            boolean available = scanner.nextBoolean();
+
+
+            if (selectedProductType.equals("Car")) {
+                System.out.print("Merk: ");
+                String brand = scanner.nextLine();
+                System.out.print("Gewicht: ");
+                int weight = scanner.nextInt();
+                System.out.print("laadvermogen: ");
+                int maxLoadCapacity = scanner.nextInt();
+                Car car = productFactory.createCar(name, description, rentalPrice, insurancePrice, available, false, brand, weight, maxLoadCapacity);
+                productInventory.addProduct(car);
+            } else if (selectedProductType.equals("Truck")) {
+                System.out.print("laadvermogen: ");
+                int maxLoadCapacity = scanner.nextInt();
+                System.out.println("Motorinhoud: ");
+                int enginecapacity = scanner.nextInt();
+                Truck truck = productFactory.createTruck(name, description, rentalPrice, insurancePrice, available, false, maxLoadCapacity, enginecapacity);
+                productInventory.addProduct(truck);
+            } else if (selectedProductType.equals("Drill")) {
+                System.out.print("Merk: ");
+                String brand = scanner.nextLine();
+                System.out.print("Type: ");
+                String type = scanner.nextLine();
+                Drill drill = productFactory.createDrill(name, description, rentalPrice, insurancePrice, available, false, brand, type);
+                productInventory.addProduct(drill);
+            } else {
+                System.out.println("Ongeldig producttype.");
+                return;
+            }
+
+            System.out.println("Het " + selectedProductType + " product is succesvol toegevoegd!");
+        } else if (productChoice == 0) {
+        } else {
+            System.out.println("Ongeldige keuze. Terug naar het vorige menu.");
         }
     }
+}

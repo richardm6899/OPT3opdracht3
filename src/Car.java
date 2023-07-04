@@ -3,32 +3,46 @@ class Car extends Product {
         private int weight;
         private int engineCapacity;
 
-        public Car(String name, double rentalPrice, double insurancePrice, String brand, int weight, int engineCapacity) {
-            super(name, rentalPrice, insurancePrice);
+        public Car(String name, String omschrijving, double rentalPrice, double insurancePrice, boolean available, boolean verhuurd, String brand, int weight, int engineCapacity) {
+            super(name, omschrijving, rentalPrice, insurancePrice, available, verhuurd);
             this.brand = brand;
             this.weight = weight;
             this.engineCapacity = engineCapacity;
         }
 
-        @Override
+
+    @Override
+    public boolean isAvailable() {
+        if (verhuurd) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    @Override
         public String getProductType() {
 
             return "Car";
         }
-
-        @Override
-        public void displayDetails() {
-            System.out.println("Car: " + name);
-            System.out.println("Brand: " + brand);
-            System.out.println("Weight: " + weight + " kg");
-            System.out.println("Engine Capacity: " + engineCapacity + " cc");
-            System.out.println("Rental Price: " + rentalPrice + " euro/day");
-            System.out.println("Insurance Price: " + insurancePrice + " euro/day");
-            System.out.println();
-        }
     @Override
-    public boolean isAvailable() {
-            return true;
+    protected void displaySpecificDetails() {
+        System.out.println("Merk: " + brand);
+        System.out.println("Gewicht: " + weight + " kg");
+        System.out.println("Motorinhoud: " + engineCapacity + " cc");
     }
+
+
+
+    @Override
+    protected double calculateRentalPrice(double rentalPrice) {
+        return rentalPrice;
+    }
+
+    @Override
+    protected double calculateInsurancePrice(double insurancePrice) {
+        return insurancePrice;
+    }
+
 
     }
